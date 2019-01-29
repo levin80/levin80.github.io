@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="安装 postgersql 安装，默认安装在/usr/pgsql-11$ yum install https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-6-x86_64/pgdg-centos11-11-2.noarch.rpm$ yum install postgresql11$ yum install postgresql11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kong搭建">
+<meta property="og:url" content="https://levin80.github.io/2019/01/29/kong搭建/index.html">
+<meta property="og:site_name" content="美梦&amp;热望">
+<meta property="og:description" content="安装 postgersql 安装，默认安装在/usr/pgsql-11$ yum install https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-6-x86_64/pgdg-centos11-11-2.noarch.rpm$ yum install postgresql11$ yum install postgresql11">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-29T01:50:48.033Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kong搭建">
+<meta name="twitter:description" content="安装 postgersql 安装，默认安装在/usr/pgsql-11$ yum install https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-6-x86_64/pgdg-centos11-11-2.noarch.rpm$ yum install postgresql11$ yum install postgresql11">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://levin80.github.io/2019/01/29/kong搭建/">
+
+
+
+
+
+  <title>kong搭建 | 美梦&热望</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">美梦&热望</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://levin80.github.io/2019/01/29/kong搭建/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Levin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="美梦&热望">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">kong搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-29T09:45:32+08:00">
+                2019-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="安装-postgersql"><a href="#安装-postgersql" class="headerlink" title="安装 postgersql"></a>安装 postgersql</h3><ul>
+<li>安装，默认安装在/usr/pgsql-11<br>$ yum install <a href="https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-6-x86_64/pgdg-centos11-11-2.noarch.rpm" target="_blank" rel="noopener">https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-6-x86_64/pgdg-centos11-11-2.noarch.rpm</a><br>$ yum install postgresql11<br>$ yum install postgresql11-server</li>
+<li>初始化 -D是指定的数据文件，-X是指定的wal目录，-U 是创建数据账户 -W 会提示输入密码<br>$ /usr/pgsql-11/bin/initdb -D /export/Data/postgres -X /export/Logs/postgres -U admin -W</li>
+<li>启动<br>$ /usr/pgsql-11/bin/pg_ctl -D /export/Data/postgres -l /export/Logs/postgres/postgres.log start</li>
+<li>本地登录数据<br>$ /usr/pgsql-11/bin/psql -d template1</li>
+</ul>
+<h3 id="升级openssl"><a href="#升级openssl" class="headerlink" title="升级openssl"></a>升级openssl</h3><ul>
+<li>查看当前openssl版本,如果输出的版本低于：OpenSSL 1.0.2e则需要升级<br>$ openssl version</li>
+<li>下载<br>$ wget <a href="https://www.openssl.org/source/openssl-1.0.2-latest.tar.gz" target="_blank" rel="noopener">https://www.openssl.org/source/openssl-1.0.2-latest.tar.gz</a></li>
+<li>编译安装<br>$ ./config –prefix=/usr –openssldir=/usr/openssl shared<br>$ make &amp;&amp; make install</li>
+</ul>
+<h3 id="安装openresty"><a href="#安装openresty" class="headerlink" title="安装openresty"></a>安装openresty</h3><ul>
+<li>下载<br>$ wget <a href="https://openresty.org/download/openresty-1.13.6.2.tar.gz" target="_blank" rel="noopener">https://openresty.org/download/openresty-1.13.6.2.tar.gz</a></li>
+<li>编译安装<br>$ ./configure –with-pcre-jit –with-http_ssl_module –with-http_realip_module –with-http_stub_status_module –with-http_v2_module –prefix=/export/servers/openresty<br>$ make &amp;&amp; make install</li>
+</ul>
+<h3 id="安装luarocks"><a href="#安装luarocks" class="headerlink" title="安装luarocks"></a>安装luarocks</h3><ul>
+<li>下载源码<br>$ wget <a href="http://luarocks.github.io/luarocks/releases/luarocks-3.0.4.tar.gz" target="_blank" rel="noopener">http://luarocks.github.io/luarocks/releases/luarocks-3.0.4.tar.gz</a><br>$ tar -xf luarocks-3.0.4.tar.gz<br>…</li>
+<li>编译安</li>
+<li>这里我们指定的安装目录是：/export/servers/luarocks-3.0.4</li>
+<li>注意这里设置–with-lua和–with-lua-include，需要制定openresty目录下的luajit<br>$ ./configure –prefix=/export/servers/luarocks-3.0.4 –with-lua=/export/servers/openresty/luajit –with-lua-include=/export/servers/openresty/luajit/include/luajit-2.1<br>$ make &amp;&amp; make install</li>
+<li>设置环境变量<br>export LUAROCKS_HOME=/export/servers/luarocks-3.0.4<br>PATH=$PATH:$LUAROCKS_HOME/bin<br>export PATH</li>
+<li>验证luarocks命令是否可用<br>$ luarocks</li>
+<li>设置LUA_PATH<br>$ luarocks path</li>
+<li>把上一步输出的环境变量，写入profile中，示例如下：<br>export LUA_PATH=’/home/admin/.luarocks/share/lua/5.1/?.lua;/home/admin/.luarocks/share/lua/5.1/?/init.lua;/export/servers/luarocks-3.0.4/share/lua/5.1/?.lua;/export/servers/luarocks-3.0.4/share/lua/5.1/?/init.lua;./?.lua;/usr/local/share/luajit-2.1.0-beta3/?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua’<br>export LUA_CPATH=’/home/admin/.luarocks/lib/lua/5.1/?.so;/export/servers/luarocks-3.0.4/lib/lua/5.1/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/loadall.so’</li>
+</ul>
+<h3 id="kong依赖的lua包"><a href="#kong依赖的lua包" class="headerlink" title="kong依赖的lua包"></a>kong依赖的lua包</h3><p>正常情况下，编译kong的源码时，luarocks会自动下载相关依赖，但在公司服务器上无法通过git下载github上多个lua module源码进行编译打包(连接github一直超时)，这里记录了需要手动下载源码在编译安装的lua包。</p>
+<ul>
+<li>lua-resty-jit-uuid<br>$ wget <a href="https://codeload.github.com/thibaultcha/lua-resty-jit-uuid/tar.gz/0.0.7" target="_blank" rel="noopener">https://codeload.github.com/thibaultcha/lua-resty-jit-uuid/tar.gz/0.0.7</a><br>$ tar -xf 0.0.7<br>$ cd lua-resty-jit-uuid-0.0.7<br>$ luarocks make</li>
+<li>kong-lapis<br>$ wget <a href="https://github.com/Kong/lapis/archive/v1.6.0.1.tar.gz" target="_blank" rel="noopener">https://github.com/Kong/lapis/archive/v1.6.0.1.tar.gz</a><br>…<br>$ luarocks make kong-lapis-1.6.0.1-1.rockspec</li>
+<li>lua-pack<br>$ wget <a href="https://github.com/Kong/lua-pack/archive/1.0.5.tar.gz" target="_blank" rel="noopener">https://github.com/Kong/lua-pack/archive/1.0.5.tar.gz</a><br>…<br>$ luarocks make</li>
+<li>lua-resty-cookie<br>$ wget <a href="https://github.com/cloudflare/lua-resty-cookie/archive/v0.1.0.tar.gz" target="_blank" rel="noopener">https://github.com/cloudflare/lua-resty-cookie/archive/v0.1.0.tar.gz</a><br>…</li>
+<li>由于该包解压后没有rockspec文件，无法通过luarocks打包，需要单独下载rockspec文件到解压后的目录下<br>$ wget –no-check-certificate <a href="https://raw.githubusercontent.com/cloudflare/lua-resty-cookie/master/rockspecs/lua-resty-cookie-0.1.0-1.rockspec" target="_blank" rel="noopener">https://raw.githubusercontent.com/cloudflare/lua-resty-cookie/master/rockspecs/lua-resty-cookie-0.1.0-1.rockspec</a><br>$ luarocks make</li>
+<li>lua-resty-mlcache<br>$ wget <a href="https://github.com/thibaultcha/lua-resty-mlcache/archive/2.2.0.tar.gz" target="_blank" rel="noopener">https://github.com/thibaultcha/lua-resty-mlcache/archive/2.2.0.tar.gz</a><br>…<br>$ luarocks make</li>
+<li>kong-plugin-serverless-functions<br>$ wget <a href="https://github.com/Kong/kong-plugin-serverless-functions/archive/0.1.0.tar.gz" target="_blank" rel="noopener">https://github.com/Kong/kong-plugin-serverless-functions/archive/0.1.0.tar.gz</a><br>…</li>
+<li>由于该包的rockspec文件命名与需要的不符，需要单独下载rockspec文件到解压后的目录下<br>$ wget <a href="http://webmail.luarocks.org/manifests/kong/kong-plugin-serverless-functions-0.1.0-0.rockspec" target="_blank" rel="noopener">http://webmail.luarocks.org/manifests/kong/kong-plugin-serverless-functions-0.1.0-0.rockspec</a><br>luarocks make kong-plugin-serverless-functions-0.1.0-0.rockspec<br>$ luarocks make</li>
+<li>kong-plugin-prometheus<br>wget <a href="https://github.com/Kong/kong-plugin-prometheus/archive/0.1.0.tar.gz" target="_blank" rel="noopener">https://github.com/Kong/kong-plugin-prometheus/archive/0.1.0.tar.gz</a><br>…</li>
+<li>需要修改rockspec配置文件，把dependencies注释掉<br>$ luarocks make</li>
+</ul>
+<h3 id="安装kong"><a href="#安装kong" class="headerlink" title="安装kong"></a>安装kong</h3><ul>
+<li>下载<br>$ wget <a href="https://github.com/Kong/kong/archive/0.14.1.tar.gz" target="_blank" rel="noopener">https://github.com/Kong/kong/archive/0.14.1.tar.gz</a></li>
+<li>解压<br>$ tar -xf 0.14.1.tar.gz<br>$ mv kong-0.14.1 /export/servers<br>$ cd /export/servers/kong-0.14.1</li>
+<li>编译<br>$ make install</li>
+</ul>
+<h3 id="配置kong"><a href="#配置kong" class="headerlink" title="配置kong"></a>配置kong</h3><ul>
+<li>拷贝默认配置文件</li>
+</ul>
+<p>$ cp /export/servers/kong-0.14.1/kong.conf.default /export/servers/kong-0.14.1/kong.conf<br>需要修改的配置文件内容如下：</p>
+<ul>
+<li>kong安装的目录<br>prefix = /export/servers/kong-0.14.1/</li>
+<li>日志级别<br>log_level = notice</li>
+<li>日志目录，注意确保启动kong的账户有日志目录的写权限，否则会启动失败，建议直接执行mkdir -p /export/Logs/kong/logs/<br>proxy_access_log = /export/Logs/kong/logs/access.log<br>proxy_error_log = /export/Logs/kong/logs/error.log<br>admin_access_log = /export/Logs/kong/logs/admin_access.log<br>admin_error_log = /export/Logs/kong/logs/error.log</li>
+<li>启动nginx的账户<br>nginx_user = admin admin</li>
+<li>8000是对外提供访问服务的<br>proxy_listen = 0.0.0.0:8000, 0.0.0.0:8443 ssl</li>
+<li>8001是admin接口使用，进行配置相关操作的<br>admin_listen = 0.0.0.0:8001, 127.0.0.1:8444 ssl</li>
+<li>数据库相关配置，数据库主要存放配置的信息<br>database = postgres<br>pg_host = 127.0.0.1<br>pg_port = 5432<br>pg_user = kong<br>pg_password =<br>pg_database = kong<br>创建kong的数据库账户,注意和kong.conf的数据库配置相匹配(注意：  只有安装第一个节点需要初始化数据库)</li>
+</ul>
+<p>$ /usr/pgsql-11/bin/psql -d template1</p>
+<ul>
+<li>执行的sql<br>CREATE USER kong; CREATE DATABASE kong OWNER kong;<br>修改kong默认启动的nginx路径<br>kong会默认从几个路径寻找nginx命令来启动openresty，如果openresty安装的目录不再这几个目录下，机会启动失败，这里我们手动修改成我们自己安装的目录。</li>
+</ul>
+<p>$ vi /export/servers/kong-0.14.1/kong/cmd/utils/nginx_signals.lua</p>
+<ul>
+<li>上面文件中，这个部分需要修改<br>local nginx_search_paths = {<br>“/usr/local/openresty/nginx/sbin”,<br>“/opt/openresty/nginx/sbin”,<br>“”<br>}</li>
+<li><p>修改后的<br>local nginx_search_paths = {<br>“/export/servers/openresty/nginx/sbin”<br>}<br>初始化和启动kong</p>
+</li>
+<li><p>会连接数据库，创建kong需要的表<br>$ /export/servers/kong-0.14.1/bin/kong migrations up -c /export/servers/kong-0.14.1/kong.conf</p>
+</li>
+<li>启动kong（root账户下）<br>$ /export/servers/kong-0.14.1/bin/kong start –vv -c /export/servers/kong-0.14.1/kong.conf</li>
+<li>验证kong的admin接口<br>$ curl -i <a href="http://localhost:8001/" target="_blank" rel="noopener">http://localhost:8001/</a></li>
+<li>停止kong<br>$ /export/servers/kong-0.14.1/bin/kong stop -p /export/servers/kong-0.14.1/ </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/28/分布式任务调度竞品比对/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Levin">
+            
+              <p class="site-author-name" itemprop="name">Levin</p>
+              <p class="site-description motion-element" itemprop="description">岁月如冰河,热望如鲸歌</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-postgersql"><span class="nav-number">1.</span> <span class="nav-text">安装 postgersql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升级openssl"><span class="nav-number">2.</span> <span class="nav-text">升级openssl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装openresty"><span class="nav-number">3.</span> <span class="nav-text">安装openresty</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装luarocks"><span class="nav-number">4.</span> <span class="nav-text">安装luarocks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kong依赖的lua包"><span class="nav-number">5.</span> <span class="nav-text">kong依赖的lua包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装kong"><span class="nav-number">6.</span> <span class="nav-text">安装kong</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置kong"><span class="nav-number">7.</span> <span class="nav-text">配置kong</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Levin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
