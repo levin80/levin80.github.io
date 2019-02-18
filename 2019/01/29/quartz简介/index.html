@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Quartz Scheduler 开源框架Quartz 是 OpenSymphony 开源组织在任务调度领域的一个开源项目，完全基于 Java 实现 Spring 默认的调度框架，Quartz 很容易与 Spring 集成实现灵活可配置的调度功能 名词解释 Trigger 触发器，用于定义任务调度时间规则  Scheduler 任务调度器，Scheduler有两个重要组件：ThreadPool和J">
+<meta property="og:type" content="article">
+<meta property="og:title" content="quartz简介">
+<meta property="og:url" content="https://levin80.github.io/2019/01/29/quartz简介/index.html">
+<meta property="og:site_name" content="美梦&amp;热望">
+<meta property="og:description" content="Quartz Scheduler 开源框架Quartz 是 OpenSymphony 开源组织在任务调度领域的一个开源项目，完全基于 Java 实现 Spring 默认的调度框架，Quartz 很容易与 Spring 集成实现灵活可配置的调度功能 名词解释 Trigger 触发器，用于定义任务调度时间规则  Scheduler 任务调度器，Scheduler有两个重要组件：ThreadPool和J">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-29T10:20:43.388Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="quartz简介">
+<meta name="twitter:description" content="Quartz Scheduler 开源框架Quartz 是 OpenSymphony 开源组织在任务调度领域的一个开源项目，完全基于 Java 实现 Spring 默认的调度框架，Quartz 很容易与 Spring 集成实现灵活可配置的调度功能 名词解释 Trigger 触发器，用于定义任务调度时间规则  Scheduler 任务调度器，Scheduler有两个重要组件：ThreadPool和J">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://levin80.github.io/2019/01/29/quartz简介/">
+
+
+
+
+
+  <title>quartz简介 | 美梦&热望</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">美梦&热望</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://levin80.github.io/2019/01/29/quartz简介/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Levin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="美梦&热望">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">quartz简介</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-29T17:25:55+08:00">
+                2019-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Quartz Scheduler 开源框架<br>Quartz 是 OpenSymphony 开源组织在任务调度领域的一个开源项目，完全基于 Java 实现</p>
+<p>Spring 默认的调度框架，Quartz 很容易与 Spring 集成实现灵活可配置的调度功能</p>
+<h3 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h3><ul>
+<li><p>Trigger 触发器，用于定义任务调度时间规则</p>
+</li>
+<li><p>Scheduler 任务调度器，Scheduler有两个重要组件：ThreadPool和JobStore</p>
+</li>
+<li><p>Job 任务 也就是表示被调度的任务.JobDetail是任务的定义，而Job是任务的执行逻辑。在JobDetail里会引用一个Job Class定义</p>
+</li>
+<li><p>misfire 错过的，指本来应该被执行但实际没有被执行的任务调度</p>
+</li>
+</ul>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>Quartz 任务调度的核心元素是 scheduler, trigger 和 job，其中 trigger 和 job 是任务调度的元数据， scheduler 是实际执行调度的控制器。</p>
+<h4 id="trigger-是用于定义调度时间的元素，即按照什么时间规则去执行任务"><a href="#trigger-是用于定义调度时间的元素，即按照什么时间规则去执行任务" class="headerlink" title="trigger 是用于定义调度时间的元素，即按照什么时间规则去执行任务"></a>trigger 是用于定义调度时间的元素，即按照什么时间规则去执行任务</h4><ul>
+<li>SimpleTrigger</li>
+<li>CronTirgger</li>
+<li>DateIntervalTrigger</li>
+<li>NthIncludedDayTrigger</li>
+</ul>
+<h4 id="job-用于表示被调度的任务"><a href="#job-用于表示被调度的任务" class="headerlink" title="job 用于表示被调度的任务"></a>job 用于表示被调度的任务</h4><ul>
+<li>无状态的（stateless）</li>
+<li>有状态的（stateful）</li>
+</ul>
+<p>对于同一个 trigger 来说，有状态的 job 不能被并行执行，只有上一次触发的任务被执行完之后，才能触发下一次执行<br>Job 主要有两种属性：<br> volatility<br> durability</p>
+<p> 其中 volatility 表示任务是否被持久化到数据库存储，而 durability 表示在没有 trigger 关联的时候任务是否被保留。<br> 两者都是在值为 true 的时候任务被持久化或保留。一个 job 可以被多个 trigger 关联，但是一个 trigger 只能关联一个 job。</p>
+<h4 id="scheduler"><a href="#scheduler" class="headerlink" title="scheduler"></a>scheduler</h4><p>scheduler 由 scheduler 工厂创建：DirectSchedulerFactory 或者 StdSchedulerFactory。<br>第二种工厂 StdSchedulerFactory 使用较多，因为 DirectSchedulerFactory 使用起来不够方便，需要作许多详细的手工编码设置。<br>Scheduler 主要有三种：RemoteMBeanScheduler， RemoteScheduler 和 StdScheduler。<br>本文以最常用的 StdScheduler 为例讲解。</p>
+<p> Quartz 核心元素之间的关系如下图所示<br> <a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image001.gif" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image001.gif</a></p>
+<p> 线程视图<br> 在 Quartz 中，有两类线程，Scheduler 调度线程和任务执行线程，其中任务执行线程通常使用一个线程池维护一组线程</p>
+<p> <a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image002.gif" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image002.gif</a></p>
+<p> Scheduler 调度线程主要有两个： 执行常规调度的线程，和执行 misfired trigger 的线程。<br> 常规调度线程轮询存储的所有 trigger，如果有需要触发的 trigger，即到达了下一次触发的时间，则从任务执行线程池获取一个空闲线程，执行与该 trigger 关联的任务。<br> Misfire 线程是扫描所有的 trigger，查看是否有 misfired trigger，如果有的话根据 misfire 的策略分别处理。下图描述了这两个线程的基本流程：</p>
+<p> <a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image003.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image003.png</a></p>
+<h4 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h4><p>Quartz 中的 trigger 和 job 需要存储下来才能被使用。<br>Quartz 中有两种存储方式：RAMJobStore, JobStoreSupport，</p>
+<ul>
+<li>RAMJobStore 是将 trigger 和 job 存储在内存中，</li>
+<li>JobStoreSupport 是基于 jdbc 将 trigger 和 job 存储到数据库中。</li>
+</ul>
+<p>RAMJobStore 的存取速度非常快，但是由于其在系统被停止后所有的数据都会丢失，所以在通常应用中，都是使用 JobStoreSupport。</p>
+<p>在 Quartz 中，JobStoreSupport 使用一个驱动代理来操作 trigger 和 job 的数据存储：StdJDBCDelegate。<br>StdJDBCDelegate 实现了大部分基于标准 JDBC 的功能接口，但是对于各种数据库来说，需要根据其具体实现的特点做某些特殊处理，因此各种数据库需要扩展 StdJDBCDelegate 以实现这些特殊处理。<br>Quartz 已经自带了一些数据库的扩展实现，可以直接使用，如下图所示：</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image004.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image004.png</a></p>
+<h3 id="一个简单实例"><a href="#一个简单实例" class="headerlink" title="一个简单实例"></a>一个简单实例</h3><p>Quartz 开发包中有一个 examples 目录，其中有 15 个基本实例。建议读者阅读并实践这些例子。本文这里只列举一个小的实例，介绍基本的开发方法。</p>
+<p>准备数据库和 Quartz 用的数据表</p>
+<p>本文使用 IBM DB2 数据库：将 jdbc 驱动程序 db2jcc.jar 加入到项目中；<br>在数据库中创建一个新库 QUARTZDB；<br>执行 /quartz-1.8.4/docs/dbTables/tables_db2_v8.sql，创建数据表；表建好后如下所示：</p>
+<p>图 6. Quartz 数据表<br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image006.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image006.png</a></p>
+<p>准备配置文件，加入到项目中</p>
+<p>图 7. 实例配置文件</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image007.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image007.png</a></p>
+<p>通过实现 job 接口定义我们自己的任务类，如下所示：</p>
+<p>图 8. 定义任务类</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image008.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image008.png</a></p>
+<p>然后，实现任务调度的主程序，如下所示：</p>
+<p>本实例中，我们利用 DateIntervalTrigger 实现一个每两分钟执行一次的任务调度。</p>
+<p>图 9. 实现主程序</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image009.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image009.png</a></p>
+<p>完成后项目结构如下所示：</p>
+<p>图 10. 实例项目结构图</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image010.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image010.png</a></p>
+<p>运行程序，查看数据库表和运行结果</p>
+<p>数据库中，QRTZ_TRIGGERS 表中添加了一条 trigger 记录，如下所示：</p>
+<p>图 11. QRTZ_TRIGGERS 表中的记录</p>
+<p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image011.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image011.png</a></p>
+<p>QRTZ_JOB_DETAILS 表中添加了一条 job 记录，如下所示：</p>
+<p>图 12. QRTZ_JOB_DETAILES 表中的记录<br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image012.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image012.png</a></p>
+<p>从运行结果来看，任务每两分钟被执行一次：</p>
+<p>图 13. 运行结果<br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image013.png" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/image013.png</a></p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/opensource/os-cn-quartz/</a><br><a href="http://ifeve.com/quartz-tutorial-04-trigger/" target="_blank" rel="noopener">http://ifeve.com/quartz-tutorial-04-trigger/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/29/kong管理界面搭建/" rel="next" title="kong管理界面搭建">
+                <i class="fa fa-chevron-left"></i> kong管理界面搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/30/xxl-job学习笔记/" rel="prev" title="xxl-job学习笔记">
+                xxl-job学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Levin">
+            
+              <p class="site-author-name" itemprop="name">Levin</p>
+              <p class="site-description motion-element" itemprop="description">岁月如冰河,热望如鲸歌</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#名词解释"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#trigger-是用于定义调度时间的元素，即按照什么时间规则去执行任务"><span class="nav-number">2.1.</span> <span class="nav-text">trigger 是用于定义调度时间的元素，即按照什么时间规则去执行任务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#job-用于表示被调度的任务"><span class="nav-number">2.2.</span> <span class="nav-text">job 用于表示被调度的任务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#scheduler"><span class="nav-number">2.3.</span> <span class="nav-text">scheduler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据存储"><span class="nav-number">2.4.</span> <span class="nav-text">数据存储</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一个简单实例"><span class="nav-number">3.</span> <span class="nav-text">一个简单实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Levin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
